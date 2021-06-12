@@ -3,5 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/chia-plotter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/chia-plotter/lib/BLAKE3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/chia-plotter/lib/bls-signatures" vcs="Git" />
   </component>
 </project>

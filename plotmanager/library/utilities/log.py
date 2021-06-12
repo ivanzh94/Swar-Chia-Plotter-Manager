@@ -1,3 +1,4 @@
+import datetime
 import dateparser
 import logging
 import os
@@ -14,13 +15,34 @@ def get_log_file_name(log_directory, job, datetime):
     return os.path.join(log_directory, f'{job.name}_{str(datetime).replace(" ", "_").replace(":", "_").replace(".", "_")}.log')
 
 
-def _analyze_log_end_date(contents):
-    match = re.search(r'total time = ([\d\.]+) seconds\. CPU \([\d\.]+%\) [A-Za-z]+\s([^\n]+)\n', contents, flags=re.I)
+def get_start_time(log_file_name):
+    # added
+    match = re.search(
+        ".*_(?P<date>\d{4}(?:-\d{2}){2})_(?P<time>\d{2}(?:_\d{2}){2})_\d{6}.log",
+        log_file_name
+    )
     if not match:
         return False
-    total_seconds, date_raw = match.groups()
+    date = match.group("date")
+    time = match.group("time").replace("_", ":")
+    return " ".join((date, time))
+
+
+def _analyze_log_end_date(contents, log_file_name):
+    # modified
+    match = re.search(
+        r'total plot creation time was (?P<seconds>[\d\.]+) sec',
+        contents,
+        flags=re.I
+    )
+    if not match:
+        return False
+    total_seconds = match.group("seconds")
     total_seconds = pretty_print_time(int(float(total_seconds)))
-    parsed_date = dateparser.parse(date_raw)
+    start_time = get_start_time(log_file_name)
+    if not start_time:
+        return False
+    parsed_date = dateparser.parse(start_time)
     return dict(
         total_seconds=total_seconds,
         date=parsed_date,
@@ -46,6 +68,7 @@ def _get_regex(pattern, string, flags=re.I):
 
 
 def get_completed_log_files(log_directory, skip=None):
+    # modified
     if not skip:
         skip = []
     files = {}
@@ -61,16 +84,17 @@ def get_completed_log_files(log_directory, skip=None):
         except UnicodeDecodeError:
             continue
         f.close()
-        if 'Total time = ' not in contents:
+        if 'Total plot creation time was' not in contents:
             continue
         files[file_path] = contents
     return files
 
 
 def analyze_log_dates(log_directory, analysis):
+    # modified
     files = get_completed_log_files(log_directory, skip=list(analysis['files'].keys()))
     for file_path, contents in files.items():
-        data = _analyze_log_end_date(contents)
+        data = _analyze_log_end_date(contents, file_path)
         if data is None:
             continue
         analysis['files'][file_path] = {'data': data, 'checked': False}
@@ -79,16 +103,17 @@ def analyze_log_dates(log_directory, analysis):
 
 
 def analyze_log_times(log_directory):
+    # modified
     total_times = {1: 0, 2: 0, 3: 0, 4: 0}
     line_numbers = {1: [], 2: [], 3: [], 4: []}
     count = 0
     files = get_completed_log_files(log_directory)
     for file_path, contents in files.items():
         count += 1
-        phase_times, phase_dates = get_phase_info(contents, pretty_print=False)
+        phase_times, phase_dates = get_phase_info(contents, pretty_print=False, log_file_path=file_path)
         for phase, seconds in phase_times.items():
             total_times[phase] += seconds
-        splits = contents.split('Time for phase')
+        splits = contents.split('Phase')
         phase = 0
         new_lines = 1
         for split in splits:
@@ -104,21 +129,30 @@ def analyze_log_times(log_directory):
     for phase in range(1, 5):
         print(f'  phase{phase}_weight: {round(total_times[phase] / sum(total_times.values()) * 100, 2)}')
 
-
-def get_phase_info(contents, view_settings=None, pretty_print=True):
+def get_phase_info(contents, view_settings=None, pretty_print=True, log_file_path=None):
+    # modified
     if not view_settings:
         view_settings = {}
     phase_times = {}
     phase_dates = {}
 
+    phase_seconds = {}
+    start_datetime = None
+    if log_file_path is not None:
+        start_datetime = dateparser.parse(get_start_time(log_file_path))
     for phase in range(1, 5):
-        match = re.search(rf'time for phase {phase} = ([\d\.]+) seconds\. CPU \([\d\.]+%\) [A-Za-z]+\s([^\n]+)\n', contents, flags=re.I)
+        if log_file_path is None or start_datetime is None:
+            continue
+        match = re.search(rf'Phase {phase} took (?P<seconds>[\d\.]+) sec', contents, flags=re.I)
         if match:
-            seconds, date_raw = match.groups()
+            seconds = match.group('seconds')
             seconds = float(seconds)
-            phase_times[phase] = pretty_print_time(int(seconds), view_settings['include_seconds_for_phase']) if pretty_print else seconds
-            parsed_date = dateparser.parse(date_raw)
-            phase_dates[phase] = parsed_date
+            phase_seconds[phase] = seconds
+            phase_times[phase] = pretty_print_time(
+                int(seconds),
+                view_settings['include_seconds_for_phase']
+            ) if pretty_print else seconds
+            phase_dates[phase] = start_datetime + datetime.timedelta(seconds=sum(phase_seconds.values()))
 
     return phase_times, phase_dates
 
@@ -169,7 +203,7 @@ def check_log_progress(jobs, running_work, progress_settings, notification_setti
 
         progress = get_progress(line_count=line_count, progress_settings=progress_settings)
 
-        phase_times, phase_dates = get_phase_info(data, view_settings)
+        phase_times, phase_dates = get_phase_info(data, view_settings, log_file_path=work.log_file)
         current_phase = 1
         if phase_times:
             current_phase = max(phase_times.keys()) + 1
@@ -178,7 +212,7 @@ def check_log_progress(jobs, running_work, progress_settings, notification_setti
         work.current_phase = current_phase
         work.progress = f'{progress:.2f}%'
 
-        if psutil.pid_exists(pid) and 'renamed final file from ' not in data.lower():
+        if psutil.pid_exists(pid) and 'Started copy to ' not in data.lower():
             logging.info(f'PID still alive: {pid}')
             continue
 

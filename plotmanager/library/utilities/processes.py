@@ -44,15 +44,13 @@ def is_windows():
 
 
 def get_chia_executable_name():
-    return f'chia{".exe" if is_windows() else ""}'
+    # modified
+    return f'chia_plot{".exe" if is_windows() else ""}'
 
 
 def get_plot_k_size(commands):
-    try:
-        k_index = commands.index('-k') + 1
-    except ValueError:
-        return None
-    return commands[k_index]
+    # modified
+    return "32"
 
 
 def get_plot_directories(commands):
@@ -86,16 +84,17 @@ def get_plot_drives(commands, drives=None):
 
 
 def get_chia_drives():
+    # modified
     drive_stats = {'temp': {}, 'temp2': {}, 'dest': {}}
     chia_executable_name = get_chia_executable_name()
     for process in psutil.process_iter():
         try:
-            if chia_executable_name not in process.name() and 'python' not in process.name().lower():
+            if chia_executable_name not in process.name():
                 continue
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'plots' not in process.cmdline() or 'create' not in process.cmdline():
+            if 'chia_plot' not in process.cmdline():
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
@@ -140,12 +139,13 @@ def identify_drive(file_path, drives):
 
 
 def get_plot_id(file_path=None, contents=None):
+    # modified
     if not contents:
         f = open(file_path, 'r')
         contents = f.read()
         f.close()
 
-    match = re.search(rf'^ID: (.*?)$', contents, flags=re.M)
+    match = re.search(rf'^Process ID: (.*?)$', contents, flags=re.M)
     if match:
         return match.groups()[0]
     return None
@@ -171,24 +171,25 @@ def get_temp_size(plot_id, temporary_directory, temporary2_directory):
 
 
 def get_running_plots(jobs, running_work, instrumentation_settings):
+    # modified
     chia_processes = []
     logging.info(f'Getting running plots')
     chia_executable_name = get_chia_executable_name()
     for process in psutil.process_iter():
         try:
-            if chia_executable_name not in process.name() and 'python' not in process.name().lower():
+            if chia_executable_name not in process.name():
                 continue
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'plots' not in process.cmdline() or 'create' not in process.cmdline():
+            if 'chia_plot' not in process.cmdline():
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
         if process.parent():
             try:
                 parent_commands = process.parent().cmdline()
-                if 'plots' in parent_commands and 'create' in parent_commands:
+                if 'chia_plot' in parent_commands:
                     continue
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass

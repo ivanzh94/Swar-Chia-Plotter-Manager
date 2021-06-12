@@ -19,7 +19,8 @@ def _get_config():
 
 
 def _get_chia_location(config):
-    return config.get('chia_location', 'chia')
+    # modified
+    return config.get('chia_location', 'chia-plot')
 
 
 def _get_progress_settings(config):
