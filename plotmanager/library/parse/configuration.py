@@ -51,6 +51,8 @@ def _get_log_settings(config):
 
 def to_full_path(path):
     # added
+    if isinstance(path, list):
+        return [to_full_path(i) for i in path]
     return path if path.endswith('/') else f"{path}/"
 
 def _get_jobs(config):
@@ -60,12 +62,15 @@ def _get_jobs(config):
     jobs = config['jobs']
     jobs_copy = copy.deepcopy(jobs)
     for idx, job in enumerate(jobs_copy):
-        if job.get("temporary_directory", False):
-            jobs[idx]["temporary_directory"] = to_full_path(job["temporary_directory"])
-        if job.get("temporary2_directory", False):
-            jobs[idx]["temporary2_directory"] = to_full_path(job["temporary2_directory"])
-        if job.get("destination_directory", False):
-            jobs[idx]["destination_directory"] = to_full_path(job["destination_directory"])
+        temporary_directory = job.get("temporary_directory", None)
+        if temporary_directory is not None:
+            jobs[idx]["temporary_directory"] = to_full_path(temporary_directory)
+        temporary2_directory = job.get("temporary2_directory", False)
+        if temporary2_directory is not None:
+            jobs[idx]["temporary2_directory"] = to_full_path(temporary2_directory)
+        destination_directory = job.get("destination_directory", False)
+        if destination_directory is not None:
+            jobs[idx]["destination_directory"] = to_full_path(destination_directory)
     del jobs_copy
     return jobs
 
