@@ -178,7 +178,7 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
     chia_executable_name = get_chia_executable_name()
     for process in psutil.process_iter():
         try:
-            if chia_executable_name not in process.name():
+            if process.status() != "zombie" and chia_executable_name not in process.name():
                 continue
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue

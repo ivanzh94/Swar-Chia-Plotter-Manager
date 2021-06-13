@@ -195,6 +195,7 @@ def get_progress(line_count, progress_settings):
 
 def check_log_progress(jobs, running_work, progress_settings, notification_settings, view_settings,
                        instrumentation_settings):
+    # modified
     for pid, work in list(running_work.items()):
         logging.info(f'Checking log progress for PID: {pid}')
         if not work.log_file:
@@ -216,7 +217,7 @@ def check_log_progress(jobs, running_work, progress_settings, notification_setti
         work.current_phase = current_phase
         work.progress = f'{progress:.2f}%'
 
-        if psutil.pid_exists(pid) and 'Copy to ' not in data.lower():
+        if psutil.pid_exists(pid) and 'Copy to ' not in data:
             logging.info(f'PID still alive: {pid}')
             continue
 
