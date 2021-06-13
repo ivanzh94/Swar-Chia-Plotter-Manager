@@ -172,7 +172,9 @@ def get_progress(line_count, progress_settings):
     if line_count > phase1_line_end:
         progress += phase1_weight
     else:
-        progress += phase1_weight * (((line_count - 10 + 2.5) if line_count > 10 else 0) / phase1_line_end)
+        progress += phase1_weight * ((line_count - 10 if line_count > 10 else 0) / phase1_line_end) + \
+                    (int((10 / phase1_line_end) * phase1_weight) / 8 * (line_count - 10)) * 0.85 \
+            if line_count > 10 else 0
         return progress
     if line_count > phase2_line_end:
         progress += phase2_weight

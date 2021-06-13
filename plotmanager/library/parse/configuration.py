@@ -1,6 +1,7 @@
 import pathlib
 import os
 import yaml
+import copy
 
 
 from plotmanager.library.utilities.exceptions import InvalidYAMLConfigException
@@ -48,11 +49,25 @@ def _get_log_settings(config):
     _check_parameters(parameter=log, expected_parameters=expected_parameters, parameter_type='log')
     return log['folder_path']
 
+def to_full_path(path):
+    # added
+    return path if path.endswith('/') else f"{path}/"
 
 def _get_jobs(config):
+    # modified
     if 'jobs' not in config:
         raise InvalidYAMLConfigException('Failed to find the jobs parameter in the YAML.')
-    return config['jobs']
+    jobs = config['jobs']
+    jobs_copy = copy.deepcopy(jobs)
+    for idx, job in enumerate(jobs_copy):
+        if job.get("temporary_directory", False):
+            jobs[idx]["temporary_directory"] = to_full_path(job["temporary_directory"])
+        if job.get("temporary2_directory", False):
+            jobs[idx]["temporary2_directory"] = to_full_path(job["temporary2_directory"])
+        if job.get("destination_directory", False):
+            jobs[idx]["destination_directory"] = to_full_path(job["destination_directory"])
+    del jobs_copy
+    return jobs
 
 
 def _get_global_config(config):
