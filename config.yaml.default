@@ -90,10 +90,10 @@ progress:
   phase2_line_end: 33
   phase3_line_end: 47
   phase4_line_end: 52
-  phase1_weight: 41.81
-  phase2_weight: 20.75
-  phase3_weight: 33.89
-  phase4_weight: 3.55
+  phase1_weight: 46.98
+  phase2_weight: 20.7
+  phase3_weight: 29.95
+  phase4_weight: 2.37
 
 
 global:

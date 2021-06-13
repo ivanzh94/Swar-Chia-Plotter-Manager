@@ -182,14 +182,15 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'chia_plot' not in process.cmdline()[0]:
+            cmdline = process.cmdline()
+            if cmdline and 'chia_plot' not in cmdline[0]:
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
         if process.parent():
             try:
                 parent_commands = process.parent().cmdline()
-                if 'chia_plot' in parent_commands[0]:
+                if parent_commands and 'chia_plot' in parent_commands[0]:
                     continue
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass
