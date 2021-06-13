@@ -158,6 +158,7 @@ def get_phase_info(contents, view_settings=None, pretty_print=True, log_file_pat
 
 
 def get_progress(line_count, progress_settings):
+    # modified
     phase1_line_end = progress_settings['phase1_line_end']
     phase2_line_end = progress_settings['phase2_line_end']
     phase3_line_end = progress_settings['phase3_line_end']
@@ -167,6 +168,9 @@ def get_progress(line_count, progress_settings):
     phase3_weight = progress_settings['phase3_weight']
     phase4_weight = progress_settings['phase4_weight']
     progress = 0
+
+    line_count = 0 if line_count <= 10 else (line_count - 10)
+
     if line_count > phase1_line_end:
         progress += phase1_weight
     else:

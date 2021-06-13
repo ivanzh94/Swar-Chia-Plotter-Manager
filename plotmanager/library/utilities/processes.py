@@ -94,7 +94,7 @@ def get_chia_drives():
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'chia_plot' not in process.cmdline():
+            if 'chia_plot' not in process.cmdline()[0]:
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
@@ -145,9 +145,9 @@ def get_plot_id(file_path=None, contents=None):
         contents = f.read()
         f.close()
 
-    match = re.search(rf'^Process ID: (.*?)$', contents, flags=re.M)
+    match = re.search(r'^Plot Name: plot-k\d{2}-\d{4}(?:-\d{2}){4}-(?P<plot_id>.*)$', contents, flags=re.M)
     if match:
-        return match.groups()[0]
+        return match.group('plot_id')
     return None
 
 
@@ -182,14 +182,14 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'chia_plot' not in process.cmdline():
+            if 'chia_plot' not in process.cmdline()[0]:
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
         if process.parent():
             try:
                 parent_commands = process.parent().cmdline()
-                if 'chia_plot' in parent_commands:
+                if 'chia_plot' in parent_commands[0]:
                     continue
             except (psutil.AccessDenied, psutil.ZombieProcess):
                 pass

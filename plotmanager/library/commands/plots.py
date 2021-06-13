@@ -5,13 +5,16 @@ def create(size, memory_buffer, temporary_directory, destination_directory, thre
     flags = dict(
         # k=size,
         # b=memory_buffer,
-        t=temporary_directory,
-        d=destination_directory,
+        t=temporary_directory if temporary_directory.endswith('/')
+        else f"{temporary_directory}/",
+        d=destination_directory if destination_directory.endswith('/')
+        else f"{destination_directory}/",
         r=threads,
         u=buckets,
     )
     if temporary2_directory is not None:
-        flags['2'] = temporary2_directory
+        flags['2'] = temporary2_directory if temporary2_directory.endswith('/') \
+            else f"{temporary2_directory}/"
     if farmer_public_key is not None:
         flags['f'] = farmer_public_key
     if pool_public_key is not None:
