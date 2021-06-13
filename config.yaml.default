@@ -86,10 +86,10 @@ progress:
   #                 information with the existing log file to calculate a progress percent.
   #   phase_weight: These are the weight to assign to each phase in the progress calculations. Typically, Phase 1 and 3
   #                 are the longest phases so they will hold more weight than the others.
-  phase1_line_end: 18
-  phase2_line_end: 32
-  phase3_line_end: 46
-  phase4_line_end: 51
+  phase1_line_end: 19
+  phase2_line_end: 33
+  phase3_line_end: 47
+  phase4_line_end: 52
   phase1_weight: 41.81
   phase2_weight: 20.75
   phase3_weight: 33.89
