@@ -94,7 +94,8 @@ def get_chia_drives():
         except (psutil.AccessDenied, psutil.NoSuchProcess):
             continue
         try:
-            if 'chia_plot' not in process.cmdline()[0]:
+            cmdline = process.cmdline()
+            if cmdline and 'chia_plot' not in cmdline[0]:
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
             continue
