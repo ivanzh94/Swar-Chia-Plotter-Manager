@@ -127,8 +127,8 @@ def load_jobs(config_jobs):
             temporary2_directory = None
         job.temporary2_directory = temporary2_directory
 
-        # job.temp2multiple = info.get("temp2multiple", False)
-        job.skipdrivecapacity = info.get("skipdrivecapacity", None)
+        # job.temp2_multiple = info.get("temp2_multiple", False)
+        job.skip_drive_capacity_percent = info.get("skip_drive_capacity_percent", None)
 
         job.size = info['size']
         job.bitfield = info['bitfield']
