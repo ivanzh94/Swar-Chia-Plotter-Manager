@@ -196,6 +196,7 @@ jobs:
     temporary2_destination_sync: false
     exclude_final_directory: false
     skip_full_destinations: true
+    skip_drive_capacity: 96
     unix_process_priority: 10
     windows_process_priority: 32
     enable_cpu_affinity: false
