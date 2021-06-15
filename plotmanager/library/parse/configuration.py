@@ -1,6 +1,7 @@
 import pathlib
 import os
 import yaml
+import copy
 
 
 from plotmanager.library.utilities.exceptions import InvalidYAMLConfigException
@@ -19,7 +20,8 @@ def _get_config():
 
 
 def _get_chia_location(config):
-    return config.get('chia_location', 'chia')
+    # modified
+    return config.get('chia_location', 'chia-plot')
 
 
 def _get_progress_settings(config):
@@ -47,11 +49,30 @@ def _get_log_settings(config):
     _check_parameters(parameter=log, expected_parameters=expected_parameters, parameter_type='log')
     return log['folder_path']
 
+def to_full_path(path):
+    # added
+    if isinstance(path, list):
+        return [to_full_path(i) for i in path]
+    return path if path.endswith('/') else f"{path}/"
 
 def _get_jobs(config):
+    # modified
     if 'jobs' not in config:
         raise InvalidYAMLConfigException('Failed to find the jobs parameter in the YAML.')
-    return config['jobs']
+    jobs = config['jobs']
+    jobs_copy = copy.deepcopy(jobs)
+    for idx, job in enumerate(jobs_copy):
+        temporary_directory = job.get("temporary_directory", None)
+        if temporary_directory is not None:
+            jobs[idx]["temporary_directory"] = to_full_path(temporary_directory)
+        temporary2_directory = job.get("temporary2_directory", False)
+        if temporary2_directory is not None:
+            jobs[idx]["temporary2_directory"] = to_full_path(temporary2_directory)
+        destination_directory = job.get("destination_directory", False)
+        if destination_directory is not None:
+            jobs[idx]["destination_directory"] = to_full_path(destination_directory)
+    del jobs_copy
+    return jobs
 
 
 def _get_global_config(config):

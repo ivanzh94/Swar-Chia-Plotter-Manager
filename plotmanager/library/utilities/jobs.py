@@ -18,6 +18,7 @@ def has_active_jobs_and_work(jobs):
     return False
 
 
+
 def get_target_directories(job, drives_free_space):
     job_offset = job.total_completed + job.total_running
 
@@ -40,7 +41,6 @@ def get_target_directories(job, drives_free_space):
 
     return destination_directory, temporary_directory, temporary2_directory, job
 
-
 def check_valid_destinations(job, drives_free_space):
     job_size = determine_job_size(job.size)
     drives = list(drives_free_space.keys())
@@ -49,13 +49,22 @@ def check_valid_destinations(job, drives_free_space):
         destination_directories = [destination_directories]
 
     valid_destinations = []
+    skip_drive_capacity = job.skip_drive_capacity
     for directory in destination_directories:
         drive = identify_drive(file_path=directory, drives=drives)
         logging.info(f'Drive "{drive}" has {drives_free_space[drive]} free space.')
-        if drives_free_space[drive] is None or drives_free_space[drive] >= job_size:
-            valid_destinations.append(directory)
-            continue
-        logging.error(f'Drive "{drive}" does not have enough space. This directory will be skipped.')
+        if skip_drive_capacity is not None:
+            if psutil.disk_usage(drive).percent < skip_drive_capacity:
+                valid_destinations.append(directory)
+                continue
+            logging.error(
+                f"Drive '{drive}' used capacity greater then {skip_drive_capacity}%. This directory will be skipped."
+            )
+        else:
+            if drives_free_space[drive] is None or drives_free_space[drive] >= job_size:
+                valid_destinations.append(directory)
+                continue
+            logging.error(f'Drive "{drive}" does not have enough space. This directory will be skipped.')
 
     if not valid_destinations:
         job.max_plots = 0
@@ -117,6 +126,9 @@ def load_jobs(config_jobs):
         if not temporary2_directory:
             temporary2_directory = None
         job.temporary2_directory = temporary2_directory
+
+        # job.temp2_multiple = info.get("temp2_multiple", False)
+        job.skip_drive_capacity_percent = info.get("skip_drive_capacity_percent", None)
 
         job.size = info['size']
         job.bitfield = info['bitfield']

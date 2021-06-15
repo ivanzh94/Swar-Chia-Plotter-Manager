@@ -26,6 +26,10 @@ class Job:
     destination_directory = []
     exclude_final_directory = None
     skip_full_destinations = None
+
+    skip_drive_capacity_percent = None
+    # temp2_multiple = False
+
     size = None
     bitfield = None
     threads = None

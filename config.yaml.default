@@ -86,14 +86,14 @@ progress:
   #                 information with the existing log file to calculate a progress percent.
   #   phase_weight: These are the weight to assign to each phase in the progress calculations. Typically, Phase 1 and 3
   #                 are the longest phases so they will hold more weight than the others.
-  phase1_line_end: 801
-  phase2_line_end: 834
-  phase3_line_end: 2474
-  phase4_line_end: 2620
-  phase1_weight: 33.4
-  phase2_weight: 20.43
-  phase3_weight: 42.29
-  phase4_weight: 3.88
+  phase1_line_end: 19
+  phase2_line_end: 33
+  phase3_line_end: 47
+  phase4_line_end: 52
+  phase1_weight: 46.98
+  phase2_weight: 20.7
+  phase3_weight: 29.95
+  phase4_weight: 2.37
 
 
 global:
@@ -196,6 +196,7 @@ jobs:
     temporary2_destination_sync: false
     exclude_final_directory: false
     skip_full_destinations: true
+    skip_drive_capacity_percent: 96
     unix_process_priority: 10
     windows_process_priority: 32
     enable_cpu_affinity: false

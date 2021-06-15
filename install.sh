@@ -113,33 +113,28 @@ install_dependencies(){
     elif check_sys packageManager apt;then
 
         apt_depends=(
-            make automake gcc gcc-c++ build-essential libssl-dev git cmake wget tar
+            libsodium-dev libgmp3-dev make automake gcc gcc-c++ g++ build-essential libssl-dev git cmake wget tar
         )
 
         for depend in ${apt_depends[@]}; do
             apt install -y ${depend}
         done
 
-        apt-get install python3.8 python3.8-dev
+        apt-get install python3.8 python3.8-dev python3.8-venv
         ln -s /usr/bin/python3.8 /usr/bin/python3
 
     fi
     PythonBin="/usr/bin/python3.8"
 }
 
-install_chia_block(){
+install_chia_plotter(){
     cd ${PWD}
-    echo "Starting install chia-blockchain"
-    git submodule update --init chia-blockchain
-    cd chia-blockchain
-    sed -i 's/"chiapos/#&/' setup.py
-    /bin/bash install.sh
-
-    source ./activate
-    install_chiapos
-    chia init
-    deactivate
-    cd ..
+    echo "Starting install chia-plotter"
+    git submodule update --init chia-plotter
+    cd chia-plotter
+    git submodule update --init
+    ./make_devel.sh
+    ln -s -f ${PWD}/chia-plotter/build/chia_plot /usr/bin/
     echo "done."
 }
 
@@ -194,17 +189,6 @@ install_devtoolset-8-gcc-g++() {
     ln -s /opt/rh/devtoolset-8/root/bin/gcc /usr/bin/gcc
     ln -s /opt/rh/devtoolset-8/root/bin/g++ /usr/bin/g++
     source /opt/rh/devtoolset-8/enable
-}
-
-install_chiapos() {
-    current_pwd=`pwd`
-    [ -d "/tmp/chiapos" ] && rm -rf /tmp/chiapos
-    mkdir /tmp/chiapos
-    cd /tmp/chiapos
-    git clone https://github.com/pechy/chiapos.git
-    cd chiapos
-    python setup.py install
-    cd ${current_pwd}
 }
 
 install_python38() {
