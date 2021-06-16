@@ -134,7 +134,8 @@ install_chia_plotter(){
     cd chia-plotter
     git submodule update --init
     ./make_devel.sh
-    ln -s -f ${PWD}/chia-plotter/build/chia_plot /usr/bin/
+    install_path=`pwd`
+    ln -s -f ${install_path}/build/chia_plot /usr/bin/
     echo "done."
     cd ../
 }
