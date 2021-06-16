@@ -136,7 +136,7 @@ install_chia_plotter(){
     ./make_devel.sh
     ln -s -f ${PWD}/chia-plotter/build/chia_plot /usr/bin/
     echo "done."
-    cd ${PWD}
+    cd ../
 }
 
 
