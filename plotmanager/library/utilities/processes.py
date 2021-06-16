@@ -128,16 +128,39 @@ def get_system_drives():
     drives.sort(reverse=True)
     return drives
 
-
+import pysnooper
+@pysnooper.snoop()
 def identify_drive(file_path, drives):
     if not file_path:
         return None
+    if not file_path.endswith('/'):
+        file_path = file_path + '/'
+    best_match = dict()
     for drive in drives:
+        if not drive.endswith('/'):
+            drive = drive + '/'
+        if drive == file_path:
+            return drive
+
         if drive not in file_path:
             continue
-        return drive
-    return None
 
+        match_count = 0
+        for x, y in zip(
+            filter(lambda x: len(x), drive.split('/')),
+            filter(lambda y: len(y), file_path.split('/'))
+        ):
+            if x == y:
+                match_count += 1
+                continue
+            else:
+                match_count = 0
+                break
+
+        if best_match.get("match_count", 0) < match_count:
+            best_match = {"drive": drive, "match_count": match_count}
+
+    return best_match["drive"] if best_match else "/"
 
 def get_plot_id(file_path=None, contents=None):
     # modified
