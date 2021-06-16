@@ -139,7 +139,6 @@ install_chia_plotter(){
     cd ../
 }
 
-
 install_swar(){
     cd ${PWD}
     echo "Starting install swar"
@@ -213,6 +212,6 @@ clean_tmps() {
 }
 
 install_dependencies
-install_chia_plotter
 install_swar
+install_chia_plotter
 clean_tmps
