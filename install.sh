@@ -100,12 +100,12 @@ install_dependencies(){
         done
 
         if CentosVersion 8;then
-            yum -y install python38 python38-devel gcc gcc-c++
+            yum -y install python38 python38-devel gcc gcc-c++ gmp-devel libsodium libsodium-devel
             ln -s /usr/bin/python3.8 /usr/bin/python3
             install_cmake
         else
             install_devtoolset-8-gcc-g++
-            #yum -y install python3 python3-devel
+            yum -y install python3 python3-devel gmp-devel libsodium gmp-static libsodium-static
             install_cmake3.14.5
             install_python38
         fi
@@ -113,7 +113,7 @@ install_dependencies(){
     elif check_sys packageManager apt;then
 
         apt_depends=(
-            libsodium-dev libgmp3-dev make automake gcc gcc-c++ g++ build-essential libssl-dev git cmake wget tar
+            libsodium-dev libgmp3-dev make automake gcc gcc-c++ g++ build-essential libssl-dev git cmake wget tar libsodium-dev
         )
 
         for depend in ${apt_depends[@]}; do
@@ -172,7 +172,7 @@ install_cmake3.14.5() {
     [ -d "/tmp/cmake" ] && rm -rf /tmp/cmake
     mkdir -p /tmp/cmake
     cd /tmp/cmake
-    https://cmake.org/files/v3.14/cmake-3.14.5.tar.gz
+    wget https://cmake.org/files/v3.14/cmake-3.14.5.tar.gz
     tar -zxvf cmake-3.14.5.tar.gz
     cd cmake-3.14.5
     ./bootstrap --prefix=/usr/local/cmake
@@ -212,6 +212,6 @@ clean_tmps() {
 }
 
 install_dependencies
-install_chia_block
+install_chia_plotter
 install_swar
 clean_tmps

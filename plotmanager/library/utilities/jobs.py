@@ -49,16 +49,16 @@ def check_valid_destinations(job, drives_free_space):
         destination_directories = [destination_directories]
 
     valid_destinations = []
-    skip_drive_capacity = job.skip_drive_capacity
+    skip_drive_capacity_percent = job.skip_drive_capacity_percent
     for directory in destination_directories:
         drive = identify_drive(file_path=directory, drives=drives)
         logging.info(f'Drive "{drive}" has {drives_free_space[drive]} free space.')
-        if skip_drive_capacity is not None:
-            if psutil.disk_usage(drive).percent < skip_drive_capacity:
+        if skip_drive_capacity_percent is not None:
+            if psutil.disk_usage(drive).percent < skip_drive_capacity_percent:
                 valid_destinations.append(directory)
                 continue
             logging.error(
-                f"Drive '{drive}' used capacity greater then {skip_drive_capacity}%. This directory will be skipped."
+                f"Drive '{drive}' has used {skip_drive_capacity_percent}% of its capacity. This directory will be skipped."
             )
         else:
             if drives_free_space[drive] is None or drives_free_space[drive] >= job_size:
