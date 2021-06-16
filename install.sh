@@ -100,7 +100,7 @@ install_dependencies(){
         done
 
         if CentosVersion 8;then
-            yum -y install python38 python38-devel gcc gcc-c++ gmp-devel libsodium libsodium-devel
+            yum -y install python38 python38-devel gcc gcc-c++ gmp-devel libsodium libsodium-devel libsodium-static
             ln -s /usr/bin/python3.8 /usr/bin/python3
             install_cmake
         else
@@ -136,6 +136,7 @@ install_chia_plotter(){
     ./make_devel.sh
     ln -s -f ${PWD}/chia-plotter/build/chia_plot /usr/bin/
     echo "done."
+    cd ${PWD}
 }
 
 
