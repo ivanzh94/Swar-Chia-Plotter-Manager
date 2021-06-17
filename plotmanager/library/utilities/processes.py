@@ -151,7 +151,6 @@ def identify_drive(file_path, drives):
         ):
             if x == y:
                 match_count += 1
-                continue
             else:
                 match_count = 0
                 break
