@@ -1,4 +1,0 @@
-[submodule "chia-plotter"]
-	path = chia-plotter
-	url = https://github.com/madMAx43v3r/chia-plotter.git
-	branch = master
