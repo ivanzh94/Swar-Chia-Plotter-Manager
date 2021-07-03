@@ -2,3 +2,7 @@
 	path = chia-plotter
 	url = https://github.com/madMAx43v3r/chia-plotter.git
 	branch = master
+[submodule "chia-plotter-puzzles"]
+	path = chia-plotter-puzzles
+	url = https://github.com/madMAx43v3r/chia-plotter.git
+	branch = pool-puzzles

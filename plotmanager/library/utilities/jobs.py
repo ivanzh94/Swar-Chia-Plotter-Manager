@@ -18,7 +18,6 @@ def has_active_jobs_and_work(jobs):
     return False
 
 
-
 def get_target_directories(job, drives_free_space):
     job_offset = job.total_completed + job.total_running
 
@@ -91,6 +90,7 @@ def load_jobs(config_jobs):
 
         job.farmer_public_key = info.get('farmer_public_key', None)
         job.pool_public_key = info.get('pool_public_key', None)
+        job.pool_contract_address = info.get('pool_contract_address', None)
         job.max_concurrent = info['max_concurrent']
         job.max_concurrent_with_start_early = info['max_concurrent_with_start_early']
 
@@ -319,6 +319,7 @@ def start_work(job, chia_location, log_directory, drives_free_space):
         chia_location=chia_location,
         farmer_public_key=job.farmer_public_key,
         pool_public_key=job.pool_public_key,
+        pool_contract_address=job.pool_contract_address,
         size=job.size,
         memory_buffer=job.memory_buffer,
         temporary_directory=temporary_directory,
@@ -327,7 +328,7 @@ def start_work(job, chia_location, log_directory, drives_free_space):
         threads=job.threads,
         buckets=job.buckets,
         bitfield=job.bitfield,
-        exclude_final_directory=job.exclude_final_directory,
+        exclude_final_directory=job.exclude_final_directory
     )
     logging.info(f'Starting with plot command: {plot_command}')
 
