@@ -131,7 +131,7 @@ install_chia_plotter(){
     cd ${PWD}
     echo "Starting install chia-plotter"
     git submodule update --init chia-plotter-puzzles
-    cd chia-plotter
+    cd chia-plotter-puzzles
     git submodule update --init
     ./make_devel.sh
     install_path=`pwd`
