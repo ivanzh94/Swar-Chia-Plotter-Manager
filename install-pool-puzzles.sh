@@ -127,7 +127,7 @@ install_dependencies(){
     PythonBin="/usr/bin/python3.8"
 }
 
-install_chia_plotter(){
+install_chia_plotter_pool_puzzles(){
     cd ${PWD}
     echo "Starting install chia-plotter"
     git submodule update --init chia-plotter-puzzles
@@ -214,5 +214,5 @@ clean_tmps() {
 
 install_dependencies
 install_swar
-install_chia_plotter
+install_chia_plotter_pool_puzzles
 clean_tmps
