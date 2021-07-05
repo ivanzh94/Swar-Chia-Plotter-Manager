@@ -120,7 +120,7 @@ install_dependencies(){
             apt install -y ${depend}
         done
 
-        apt-get install python3.8 python3.8-dev python3.8-venv
+        apt install -y python3.8 python3.8-dev python3.8-venv
         ln -s /usr/bin/python3.8 /usr/bin/python3
 
     fi
