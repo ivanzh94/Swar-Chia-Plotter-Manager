@@ -36,6 +36,7 @@ class Job:
     threads = None
     buckets = None
     memory_buffer = None
+    thread_multiplier_for_p2 = None
 
     unix_process_priority = 10
     windows_process_priority = 32
