@@ -185,6 +185,7 @@ jobs:
     size: 32
     bitfield: true
     threads: 8
+    thread_multiplier_for_p2: 1
     buckets: 128
     memory_buffer: 4000
     max_concurrent: 6
@@ -220,6 +221,7 @@ jobs:
     size: 32
     bitfield: true
     threads: 8
+    thread_multiplier_for_p2: 1
     buckets: 128
     memory_buffer: 4000
     max_concurrent: 2
