@@ -176,8 +176,7 @@ def determine_job_size(k_size):
     return size
 
 
-def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, next_job_work, chia_location,
-                          log_directory, next_log_check, minimum_minutes_between_jobs, system_drives):
+def get_drives_free_space(jobs, system_drives, running_work):
     drives_free_space = {}
     for job in jobs:
         directories = [job.destination_directory]
@@ -198,13 +197,22 @@ def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, n
     logging.info(f'Free space before checking active jobs: {drives_free_space}')
     for pid, work in running_work.items():
         drive = work.destination_drive
-        if drive not in drives_free_space or drives_free_space[drive] is None:
+        if drive[-1] == '/' or drive[-1] == '\\':
+            drive = drive[:-1]
+        if drive in drives_free_space.keys():
+            if drives_free_space[drive] is None:
+                continue
+        else:
             continue
         work_size = determine_job_size(work.k_size)
         drives_free_space[drive] -= work_size
         logging.info(drive)
     logging.info(f'Free space after checking active jobs: {drives_free_space}')
+    return drives_free_space
 
+
+def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, next_job_work, chia_location,
+                          log_directory, next_log_check, minimum_minutes_between_jobs, system_drives):
     total_phase_1_count = 0
     for pid in running_work.keys():
         if running_work[pid].current_phase > 1:
@@ -212,6 +220,7 @@ def monitor_jobs_to_start(jobs, running_work, max_concurrent, max_for_phase_1, n
         total_phase_1_count += 1
 
     for i, job in enumerate(jobs):
+        drives_free_space = get_drives_free_space(jobs, system_drives, running_work)
         logging.info(f'Checking to queue work for job: {job.name}')
         if len(running_work.values()) >= max_concurrent:
             logging.info(f'Global concurrent limit met, skipping. Running plots: {len(running_work.values())}, '
