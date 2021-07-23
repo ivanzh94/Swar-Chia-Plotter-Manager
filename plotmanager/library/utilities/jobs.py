@@ -322,6 +322,8 @@ def start_work(job, chia_location, log_directory, drives_free_space):
     work.log_file = log_file_path
     work.datetime_start = now
     work.work_id = job.current_work_id
+    work.k_size = job.size
+    work.destination_drive = destination_directory
 
     job.current_work_id += 1
 
